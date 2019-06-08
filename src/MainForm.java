@@ -1,97 +1,103 @@
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.event.*;
 import java.sql.*;
 
 public class MainForm {
     private JPanel contentPanel;
+
+    //------------------------
+    //Login Panel Components
+    //------------------------
     private JPanel loginPanel;
-    private JTextField jTFUsername;
-    private JButton jBTLogin;
-    private JPanel North;
-    private JPanel East;
-    private JTextArea noteForSupervisorTA;
-    private JButton applyButton;
-    private JButton resetButton;
-    private JTextArea additionalInfoTA;
-    private JRadioButton cleanRadioButton;
-    private JRadioButton dirtyRadioButton;
-    private JPanel West;
-    private JPanel South;
-    private JButton logoutButton;
-    private JPanel Center;
-    private JList hkRoomList;
+    private JLabel loginLabel;
+    private JLabel loginUsernameLabel;
+    private JTextField loginUsernameTextField;
+    private JPasswordField passwordField;
+    private JLabel loginPasswordLabel;
+    private JButton loginButton;
+
+    //------------------------
+    //Housekeeper Panel Components
+    //------------------------
     private JPanel housekeeperPanel;
-    private JLabel selectedRoom;
+    private JTable housekeeperRoomsTable;
+    private JTextArea housekeeperAdditionalInfoTextArea;
+    private JTextArea housekeeperNoteForSupervisorTextArea;
+    private JButton housekeeperSaveButton;
+    private JButton housekeeperRefreshButton;
+    private JButton housekeeperLogoutButton;
+    private JCheckBox cleanedCheckBox;
+    private JLabel housekeeperGuestStatusLabel;
+    private JLabel housekeeperSelectedRoomLabel;
+    private JLabel housekeeperUsernameLabel;
+    private JLabel housekeeperCleaningTypeLabel;
 
+    //------------------------
+    //Supervisor Panel Components
+    //------------------------
+    private JPanel supervisorPanel;
+    private JLabel supervisorUsernameLabel;
+    private JLabel supervisorSelectedRoomLabel;
+    private JTextArea supervisorAdditionalInfoTextArea;
+    private JTextArea supervisorNoteForSupervisorTextArea;
+    private JButton supervisorSaveButton;
+    private JButton supervisorRefreshButton;
+    private JButton supervisorLogoutButton;
+    private JLabel supervisorGuestStatusLabel;
+    private JCheckBox checkedCheckBox;
+    private JTable supervisorRoomsTable;
+    private JLabel supervisorCleaningTypeLabel;
+
+
+    //------------------------
+    //Manager Panel Components
+    //------------------------
+
+
+    //------------------------
+    //Frontdesk Panel Components
+    //------------------------
+
+    public JPanel getContentPanel() {
+        return contentPanel;
+    }
+
+    //------------------------
+    // Constructor
+    //------------------------
     public MainForm() {
-        jBTLogin.addActionListener(new ActionListener() {
+        //Set login form heading size
+        loginLabel.setFont(loginLabel.getFont().deriveFont(32.0f));
+
+
+        housekeeperLogoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO:
-                //if user is housekeeper > show housekeeper form
-                //if user is manager > show manager form
-                //if user is front desk > show front desk form
-                //if user is supervisor > show supervisor form
-
-                try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
-
-                    // code to execute SQL queries goes here...
-                    System.out.println("we are connected");
-                    String sql = "SELECT * FROM users WHERE user_username=?";
-                    PreparedStatement statement = conn.prepareStatement(sql);
-                    statement.setString(1, jTFUsername.getText());
-                    ResultSet result = statement.executeQuery();
-
-                    while (result.next()){
-                        String role = result.getString("user_role");
-                        System.out.println(role);
-
-                        if (role.equals("admin")){
-                            loginPanel.setVisible(false);
-                            housekeeperPanel.setVisible(true);
-                            //JOptionPane.showMessageDialog(null,"You are logged in as Admin");
-
-                        }
-
-                    }
-
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-
-            }//comment
-        });
-
-        housekeeperPanel.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent e) {
-                super.componentShown(e);
-                //JOptionPane.showMessageDialog(null,"test message");
+                //logout();
             }
         });
-        logoutButton.addActionListener(new ActionListener() {
+
+        supervisorLogoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                loginPanel.setVisible(true);
-                housekeeperPanel.setVisible(false);
-                jTFUsername.setText("");
-            }
-        });
-        hkRoomList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                selectedRoom.setText(hkRoomList.getSelectedValue().toString());
+                //logout();
             }
         });
     }
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("MainForm");
-        frame.setContentPane(new MainForm().contentPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
+    //------------------------
+    // Panels helper functions
+    //------------------------
+    private void hideAllPanels(){
+        housekeeperPanel.setVisible(false);
+        loginPanel.setVisible(false);
     }
+
+    private void showPanel(JPanel panel){
+        hideAllPanels();
+        panel.setVisible(true);
+    }
+
+
+
 }
