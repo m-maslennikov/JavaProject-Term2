@@ -13,7 +13,6 @@ public class LoginForm {
     private JLabel loginPasswordLabel;
     private JPanel content;
 
-
     private JTextField getLoginUsernameTextField() {
         return loginUsernameTextField;
     }
@@ -54,16 +53,8 @@ public class LoginForm {
                     if (result.next()){
                         //TODO: implement more secure validation
                         user.setRole(result.getString("user_role"));
-                        switch (user.getRole()) {
-                            case "Housekeeper":
-                                HousekeeperForm housekeeperForm = new HousekeeperForm("Housekeeper", user);
-                                frame.dispose();
-                                break;
-                            case "Supervisor":
-                                SupervisorForm supervisorForm = new SupervisorForm("Supervisor", user);
-                                frame.dispose();
-                                break;
-                        }
+                        handleLogin(user);
+                        frame.dispose();
 
                     } else {
                         JOptionPane.showMessageDialog(null, "Invalid Username or Password", "Access Denied", JOptionPane.ERROR_MESSAGE);
@@ -74,5 +65,20 @@ public class LoginForm {
                 }
             }
         });
+    }
+
+    private void handleLogin(User user){
+
+        switch (user.getRole()) {
+            case "Housekeeper":
+                HousekeeperForm housekeeperForm = new HousekeeperForm("Housekeeper", user);
+                break;
+            case "Supervisor":
+                SupervisorForm supervisorForm = new SupervisorForm("Supervisor", user);
+                break;
+            case "Frontdesk":
+                FrontdeskForm frontdeskForm = new FrontdeskForm("Frontdesk", user);
+                break;
+        }
     }
 }
