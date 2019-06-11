@@ -53,6 +53,7 @@ public class LoginForm {
                     if (result.next()){
                         //TODO: implement more secure validation
                         user.setRole(result.getString("user_role"));
+                        user.setId(result.getInt("user_id"));
                         handleLogin(user);
                         frame.dispose();
 

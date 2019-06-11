@@ -76,12 +76,12 @@ public class FrontdeskForm {
             roomsList.get(lastElement).setCheckoutDate(roomsTable.getValueAt(i, 8).toString());
             roomsList.get(lastElement).setAdditionalInfo(roomsTable.getValueAt(i, 9).toString());
             roomsList.get(lastElement).setNoteForSupervisor(roomsTable.getValueAt(i, 10).toString());
-            roomsList.get(lastElement).saveToDB();
+            roomsList.get(lastElement).frontdeskSaveToDB();
         }
     }
 
     private void updateTable(Object[][] data){
-        frontdeskTableModel = new FrontdeskTableModel(data);
+        frontdeskTableModel = new FrontdeskTableModel(data, GlobalVariables.frontDeskTableHeader);
         roomsTable.setModel(frontdeskTableModel);
         setUpComboBoxColumn(roomsTable.getColumnModel().getColumn(6), GlobalVariables.cleaningOptions);
         setUpComboBoxColumn(roomsTable.getColumnModel().getColumn(7), GlobalVariables.guestStatuses);

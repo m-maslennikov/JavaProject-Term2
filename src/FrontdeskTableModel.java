@@ -1,11 +1,12 @@
 import javax.swing.table.AbstractTableModel;
 
 public class FrontdeskTableModel extends AbstractTableModel {
-    private String[] columnNames = GlobalVariables.frontDeskTableHeader;
+    private String[] columnNames;
     private Object[][] data;
 
-    public FrontdeskTableModel(Object[][] data) {
+    public FrontdeskTableModel(Object[][] data, String[] columnNames) {
         this.data = data;
+        this.columnNames = columnNames;
     }
 
     public int getColumnCount() {

@@ -16,7 +16,7 @@ public class Room {
     private String housekeeper;
     private String supervisor;
 
-    public void saveToDB(){
+    public void frontdeskSaveToDB(){
         try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
 
             String sql = "UPDATE Rooms SET " +
@@ -72,7 +72,58 @@ public class Room {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
 
+    public void housekeeperSaveToDB(){
+        try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
+
+            String sql = "UPDATE Rooms SET " +
+                    "room_cleaned=?, " +
+                    "room_note_for_supervisor=? " +
+                    "WHERE room_number=?";
+
+            PreparedStatement pst = conn.prepareStatement(sql);
+
+            pst.setBoolean(1, cleaned);
+            pst.setString(2, noteForSupervisor);
+            pst.setInt(3, number);
+
+            int rowsUpdated = pst.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("An existing room was updated successfully!");
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void supervisorSaveToDB(){
+        try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
+
+            String sql = "UPDATE Rooms SET " +
+                    "room_cleaned=?, " +
+                    "room_checked=?, " +
+                    "room_note_for_supervisor=? " +
+                    "WHERE room_number=?";
+
+            PreparedStatement pst = conn.prepareStatement(sql);
+
+            pst.setBoolean(1, cleaned);
+            pst.setBoolean(2, checked);
+            pst.setString(3, additionalInfo);
+            pst.setInt(4, number);
+
+            int rowsUpdated = pst.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("An existing room was updated successfully!");
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public int getNumber() {
