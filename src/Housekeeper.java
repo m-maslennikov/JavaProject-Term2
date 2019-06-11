@@ -3,21 +3,35 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class User {
-    private String username;
-    private String role;
+public class Housekeeper extends User {
+
+    public Housekeeper(String username) {
+        super();
+        setRole("Housekeeper");
+        setUsername(username);
+    }
 
     public void saveToDB(Room room){
         try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
 
             String sql = "UPDATE Rooms SET " +
-                    "room_guest_status=? " +
+                    "room_cleaned=?, " +
+                    "room_guest_status=?, " +
+                    "room_note_for_supervisor=? " +
                     "WHERE room_number=?";
 
             PreparedStatement pst = conn.prepareStatement(sql);
 
-            pst.setString(1, room.getGuestStatus());
-            pst.setInt(2, room.getNumber());
+            pst.setBoolean(1, room.isCleaned());
+
+            if (room.isCleaned()){
+                pst.setString(2, "Neutral");
+            } else {
+                pst.setString(2, room.getGuestStatus());
+            }
+
+            pst.setString(3, room.getNoteForSupervisor());
+            pst.setInt(4, room.getNumber());
 
             int rowsUpdated = pst.executeUpdate();
 
@@ -30,19 +44,4 @@ public class User {
         }
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 }

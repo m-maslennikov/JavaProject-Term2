@@ -5,17 +5,17 @@ import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class FrontdeskForm {
-    private JPanel contentPanel;
+public class SupervisorForm {
     private JTable roomsTable;
     private JButton saveButton;
     private JButton logoutButton;
     private JButton refreshButton;
     private JLabel usernameLabel;
-    private DefaultTableModel frontdeskTableModel;
+    private JPanel contentPanel;
+    private DefaultTableModel supervisor;
     private User user;
 
-    public FrontdeskForm(String title, User user) {
+    public SupervisorForm(String title, User user) {
 
         //Initialize Frame
         JFrame frame = new JFrame(title);
@@ -26,7 +26,7 @@ public class FrontdeskForm {
         usernameLabel.setText("Current user: " + user.getUsername());
 
         roomsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        updateTable(loadFrontdeskData());
+        updateTable(loadSupervisorData());
         checkTable(roomsTable);
 
         //Show Frame
@@ -43,9 +43,8 @@ public class FrontdeskForm {
         refreshButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateTable(loadFrontdeskData());
+                updateTable(loadSupervisorData());
                 checkTable(roomsTable);
-
             }
         });
 
@@ -53,7 +52,7 @@ public class FrontdeskForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveRooms();
-                updateTable(loadFrontdeskData());
+                updateTable(loadSupervisorData());
                 checkTable(roomsTable);
             }
         });
@@ -67,20 +66,25 @@ public class FrontdeskForm {
             roomsList.add(new Room());
             lastElement = roomsList.size()-1;
             roomsList.get(lastElement).setNumber(Integer.parseInt(roomsTable.getValueAt(i, 0).toString()));
-            roomsList.get(lastElement).setOccupied(Boolean.parseBoolean(roomsTable.getValueAt(i, 2).toString()));
-            roomsList.get(lastElement).setCheckoutDate(roomsTable.getValueAt(i, 1).toString());
+            roomsList.get(lastElement).setHousekeeper(roomsTable.getValueAt(i, 1).toString());
+            roomsList.get(lastElement).setCleaningType(roomsTable.getValueAt(i, 2).toString());
+            roomsList.get(lastElement).setGuestStatus(roomsTable.getValueAt(i, 3).toString());
+            roomsList.get(lastElement).setNoteForSupervisor(roomsTable.getValueAt(i, 4).toString());
+            roomsList.get(lastElement).setAdditionalInfo(roomsTable.getValueAt(i, 5).toString());
+            roomsList.get(lastElement).setCleaned(Boolean.parseBoolean(roomsTable.getValueAt(i, 6).toString()));
+            roomsList.get(lastElement).setChecked(Boolean.parseBoolean(roomsTable.getValueAt(i, 7).toString()));
 
             user.saveToDB(roomsList.get(lastElement));
         }
     }
 
     private void updateTable(Object[][] data){
-        frontdeskTableModel = new DefaultTableModel(data, Helper.frontDeskTableHeader){
+        supervisor = new DefaultTableModel(data, Helper.supervisorTableHeader){
             @Override
             public boolean isCellEditable(int row, int column)
             {
-                // make columns editable except column 1,2,3
-                return column == 1 || column == 2 || column == 3;
+                // make columns editable except column 0,1,2,3,4
+                return column > 4;
             }
 
             @Override
@@ -88,30 +92,31 @@ public class FrontdeskForm {
                 return getValueAt(0, c).getClass();
             }
         };
-        roomsTable.setModel(frontdeskTableModel);
+        roomsTable.setModel(supervisor);
     }
 
-    private Object[][] loadFrontdeskData(){
+    private Object[][] loadSupervisorData(){
         ArrayList<Room> roomsList = new ArrayList<>();
         int lastElement;
 
         try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
 
-            String sql = "SELECT * FROM rooms";
+            String sql = "SELECT * FROM rooms WHERE room_supervisor=?";
             PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, user.getUsername());
             ResultSet result = pst.executeQuery();
 
             while (result.next()){
                 roomsList.add(new Room());
                 lastElement = roomsList.size()-1;
                 roomsList.get(lastElement).setNumber(result.getInt("room_number"));
-                roomsList.get(lastElement).setOccupied(result.getBoolean("room_occupied"));
                 roomsList.get(lastElement).setCleaned(result.getBoolean("room_cleaned"));
-                roomsList.get(lastElement).setChecked(result.getBoolean("room_checked"));
                 roomsList.get(lastElement).setCleaningType(result.getString("room_cleaning_type"));
-                roomsList.get(lastElement).setCheckoutDate(result.getString("room_checkout_date"));
+                roomsList.get(lastElement).setGuestStatus(result.getString("room_guest_status"));
+                roomsList.get(lastElement).setAdditionalInfo(result.getString("room_additional_info"));
+                roomsList.get(lastElement).setNoteForSupervisor(result.getString("room_note_for_supervisor"));
+                roomsList.get(lastElement).setChecked(result.getBoolean("room_checked"));
                 roomsList.get(lastElement).setHousekeeper(result.getString("room_housekeeper"));
-                roomsList.get(lastElement).setSupervisor(result.getString("room_supervisor"));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -120,13 +125,13 @@ public class FrontdeskForm {
         Object[][] data = new Object[roomsList.size()][8];
         for (int i=0; i < roomsList.size(); i++){
             data[i][0] = roomsList.get(i).getNumber();
-            data[i][1] = roomsList.get(i).getCheckoutDate();
-            data[i][2] = roomsList.get(i).isOccupied();
-            data[i][3] = roomsList.get(i).getCleaningType();
-            data[i][4] = roomsList.get(i).isCleaned();
-            data[i][5] = roomsList.get(i).isChecked();
-            data[i][6] = roomsList.get(i).getSupervisor();
-            data[i][7] = roomsList.get(i).getHousekeeper();
+            data[i][1] = roomsList.get(i).getHousekeeper();
+            data[i][2] = roomsList.get(i).getCleaningType();
+            data[i][3] = roomsList.get(i).getGuestStatus();
+            data[i][4] = roomsList.get(i).getNoteForSupervisor();
+            data[i][5] = roomsList.get(i).getAdditionalInfo();
+            data[i][6] = roomsList.get(i).isCleaned();
+            data[i][7] = roomsList.get(i).isChecked();
         }
 
         return data;
@@ -145,5 +150,4 @@ public class FrontdeskForm {
             }
         }
     }
-
 }

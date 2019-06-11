@@ -12,24 +12,13 @@ public class LoginForm {
     private JPasswordField passwordField;
     private JLabel loginPasswordLabel;
     private JPanel content;
-
-    private JTextField getLoginUsernameTextField() {
-        return loginUsernameTextField;
-    }
-
-    private JPasswordField getPasswordField() {
-        return passwordField;
-    }
-
-    public JPanel getContent() {
-        return content;
-    }
+    private User user;
 
 
     //------------------------
     // Constructor
     //------------------------
-    public LoginForm(String title, User user) {
+    public LoginForm(String title) {
         JFrame frame = new JFrame(title);
         frame.setContentPane(content);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,22 +28,38 @@ public class LoginForm {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                user.setUsername(getLoginUsernameTextField().getText());
-                user.setPassword(getPasswordField().getText());
 
                 try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
 
                     String sql = "SELECT * FROM users WHERE user_username=? AND user_password=?";
                     PreparedStatement pst = conn.prepareStatement(sql);
-                    pst.setString(1, user.getUsername());
-                    pst.setString(2, user.getPassword());
+                    pst.setString(1, loginUsernameTextField.getText());
+                    pst.setString(2, passwordField.getText());
                     ResultSet result = pst.executeQuery();
 
                     if (result.next()){
-                        //TODO: implement more secure validation
-                        user.setRole(result.getString("user_role"));
-                        user.setId(result.getInt("user_id"));
-                        handleLogin(user);
+                        switch (result.getString("user_role")) {
+                            case "Housekeeper":
+                                user = new Housekeeper(result.getString("user_username"));
+                                HousekeeperForm housekeeperForm = new HousekeeperForm("Housekeeper", user);
+                                break;
+                            case "Supervisor":
+                                user = new Supervisor(result.getString("user_username"));
+                                SupervisorForm supervisorForm = new SupervisorForm("Supervisor", user);
+                                break;
+                            case "Frontdesk":
+                                user = new Frontdesk(result.getString("user_username"));
+                                FrontdeskForm frontdeskForm = new FrontdeskForm("Frontdesk", user);
+                                break;
+                            case "Manager":
+                                user = new Manager(result.getString("user_username"));
+                                ManagerForm managerForm = new ManagerForm("Manager", user);
+                                break;
+                        }
+
+                        //user.setRole(result.getString("user_role"));
+                        //user.setId(result.getInt("user_id"));
+                        //handleLogin(user);
                         frame.dispose();
 
                     } else {
@@ -79,6 +84,9 @@ public class LoginForm {
                 break;
             case "Frontdesk":
                 FrontdeskForm frontdeskForm = new FrontdeskForm("Frontdesk", user);
+                break;
+            case "Manager":
+                ManagerForm managerForm = new ManagerForm("Manager", user);
                 break;
         }
     }

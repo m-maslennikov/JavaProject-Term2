@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
@@ -11,7 +12,7 @@ public class HousekeeperForm {
     private JButton logoutButton;
     private JButton refreshButton;
     private JLabel usernameLabel;
-    private FrontdeskTableModel housekeeperTableModel;
+    private DefaultTableModel housekeeperTableModel;
     private User user;
 
     public HousekeeperForm(String title, User user) {
@@ -34,7 +35,7 @@ public class HousekeeperForm {
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                LoginForm loginForm = new LoginForm("Log In", user);
+                LoginForm loginForm = new LoginForm("Log In");
                 frame.dispose();
             }
         });
@@ -71,20 +72,26 @@ public class HousekeeperForm {
             roomsList.get(lastElement).setAdditionalInfo(roomsTable.getValueAt(i, 4).toString());
             roomsList.get(lastElement).setNoteForSupervisor(roomsTable.getValueAt(i, 5).toString());
             roomsList.get(lastElement).setCleaned(Boolean.parseBoolean(roomsTable.getValueAt(i, 6).toString()));
-            //roomsList.get(lastElement).setHousekeeper(roomsTable.getValueAt(i, 2).toString());
-            //roomsList.get(lastElement).setOccupied(Boolean.parseBoolean(roomsTable.getValueAt(i, 3).toString()));
-            //roomsList.get(lastElement).setChecked(Boolean.parseBoolean(roomsTable.getValueAt(i, 5).toString()));
-            //roomsList.get(lastElement).setCheckoutDate(roomsTable.getValueAt(i, 8).toString());
 
-            roomsList.get(lastElement).housekeeperSaveToDB();
+            user.saveToDB(roomsList.get(lastElement));
         }
     }
 
     private void updateTable(Object[][] data){
-        housekeeperTableModel = new FrontdeskTableModel(data, GlobalVariables.housekeeperTableHeader);
+        housekeeperTableModel = new DefaultTableModel(data, Helper.housekeeperTableHeader){
+            @Override
+            public boolean isCellEditable(int row, int column)
+            {
+                // make columns editable except column 0,1,2,3,4
+                return column > 4;
+            }
+
+            @Override
+            public Class getColumnClass(int c) {
+                return getValueAt(0, c).getClass();
+            }
+        };
         roomsTable.setModel(housekeeperTableModel);
-        //setUpComboBoxColumn(roomsTable.getColumnModel().getColumn(6), GlobalVariables.cleaningOptions);
-        //setUpComboBoxColumn(roomsTable.getColumnModel().getColumn(7), GlobalVariables.guestStatuses);
     }
 
     private Object[][] loadHousekeeperData(){
@@ -95,7 +102,7 @@ public class HousekeeperForm {
 
             String sql = "SELECT * FROM rooms WHERE room_housekeeper=?";
             PreparedStatement pst = conn.prepareStatement(sql);
-            pst.setInt(1, user.getId());
+            pst.setString(1, user.getUsername());
             ResultSet result = pst.executeQuery();
 
             while (result.next()){
@@ -108,10 +115,6 @@ public class HousekeeperForm {
                 roomsList.get(lastElement).setAdditionalInfo(result.getString("room_additional_info"));
                 roomsList.get(lastElement).setNoteForSupervisor(result.getString("room_note_for_supervisor"));
                 roomsList.get(lastElement).setSupervisor(result.getString("room_supervisor"));
-                //roomsList.get(lastElement).setOccupied(result.getBoolean("room_occupied"));
-                //roomsList.get(lastElement).setChecked(result.getBoolean("room_checked"));
-                //roomsList.get(lastElement).setCheckoutDate(result.getString("room_checkout_date"));
-                //roomsList.get(lastElement).setHousekeeper(result.getString("room_housekeeper"));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -126,22 +129,17 @@ public class HousekeeperForm {
             data[i][4] = roomsList.get(i).getAdditionalInfo();
             data[i][5] = roomsList.get(i).getNoteForSupervisor();
             data[i][6] = roomsList.get(i).isCleaned();
-            //data[i][2] = roomsList.get(i).getHousekeeper();
-            //data[i][3] = roomsList.get(i).isOccupied();
-            //data[i][5] = roomsList.get(i).isChecked();
-            //data[i][8] = roomsList.get(i).getCheckoutDate();
-
         }
 
         return data;
     }
 
     private void checkTable(JTable table){
-        FrontdeskTableModel model = (FrontdeskTableModel) table.getModel();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
         int rows = model.getRowCount();
 
         for (int i = 0; i < rows; i++) {
-            for (int j = 0; j <= 6; j++) {
+            for (int j = 0; j < 7; j++) {
                 Object ob = model.getValueAt(i, j);
                 if (ob == null || ob.toString().isEmpty()) {
                     model.setValueAt("N/A", i, j);
