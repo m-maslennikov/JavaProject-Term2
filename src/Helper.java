@@ -1,15 +1,16 @@
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class Helper {
-    public static final String[] cleaningOptions = {"Stayover", "Due Out", "None"};
-    public static final String[] guestStatuses = {"DND", "Need Service", "Neutral"};
-    public static final String[] frontDeskTableHeader = {"Room Number",  "Checkout Date", "Occupied", "Cleaning Type", "Cleaned", "Checked", "Supervisor", "Housekeeper"};
-    public static final String[] housekeeperTableHeader = {"Room Number", "Supervisor", "Cleaning Type", "Guest Status", "Additional Info", "Note for Supervisor", "Cleaned"};
-    public static final String[] supervisorTableHeader = {"Room Number", "Housekeeper", "Cleaning Type", "Guest Status", "Note for Supervisor", "Additional Info", "Cleaned", "Checked"};
-    public static final String[] managerTableHeader = {"Room Number", "Supervisor", "Housekeeper", "Occupied", "Cleaned", "Checked", "Cleaning Type", "Guest Status", "Checkout Date", "Additional Info", "Note for Supervisor"};
+    private final String[] cleaningOptions = {"Stayover", "Due Out", "None"};
+    private final String[] guestStatuses = {"DND", "Need Service", "Neutral"};
+    private final String[] frontDeskTableHeader = {"Room Number",  "Checkout Date", "Occupied", "Cleaning Type", "Cleaned", "Checked", "Supervisor", "Housekeeper"};
+    private final String[] housekeeperTableHeader = {"Room Number", "Supervisor", "Cleaning Type", "Guest Status", "Additional Info", "Note for Supervisor", "Cleaned"};
+    private final String[] supervisorTableHeader = {"Room Number", "Housekeeper", "Cleaning Type", "Guest Status", "Note for Supervisor", "Additional Info", "Cleaned", "Checked"};
+    private final String[] managerTableHeader = {"Room Number", "Supervisor", "Housekeeper", "Occupied", "Cleaned", "Checked", "Cleaning Type", "Guest Status", "Checkout Date", "Additional Info", "Note for Supervisor"};
 
-    public static String[] getUsers(String userType){
+    public String[] getUsers(String userType){
         ArrayList<String> usersList = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(DatabaseCon.CONN_STRING, DatabaseCon.USERNAME, DatabaseCon.PASSWORD)) {
@@ -29,4 +30,38 @@ public class Helper {
         return usersList.toArray(new String[0]);
     }
 
+    public void checkTable(JTable table){
+        for (int i = 0; i < table.getRowCount(); i++) {
+            for (int j = 0; j < table.getColumnCount(); j++) {
+                Object ob = table.getValueAt(i, j);
+                if (ob == null || ob.toString().isEmpty()) {
+                    table.setValueAt("N/A", i, j);
+                }
+            }
+        }
+    }
+
+    public String[] getCleaningOptions() {
+        return cleaningOptions;
+    }
+
+    public String[] getGuestStatuses() {
+        return guestStatuses;
+    }
+
+    public String[] getFrontDeskTableHeader() {
+        return frontDeskTableHeader;
+    }
+
+    public String[] getHousekeeperTableHeader() {
+        return housekeeperTableHeader;
+    }
+
+    public String[] getSupervisorTableHeader() {
+        return supervisorTableHeader;
+    }
+
+    public String[] getManagerTableHeader() {
+        return managerTableHeader;
+    }
 }

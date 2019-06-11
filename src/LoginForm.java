@@ -57,9 +57,6 @@ public class LoginForm {
                                 break;
                         }
 
-                        //user.setRole(result.getString("user_role"));
-                        //user.setId(result.getInt("user_id"));
-                        //handleLogin(user);
                         frame.dispose();
 
                     } else {
@@ -71,23 +68,5 @@ public class LoginForm {
                 }
             }
         });
-    }
-
-    private void handleLogin(User user){
-
-        switch (user.getRole()) {
-            case "Housekeeper":
-                HousekeeperForm housekeeperForm = new HousekeeperForm("Housekeeper", user);
-                break;
-            case "Supervisor":
-                SupervisorForm supervisorForm = new SupervisorForm("Supervisor", user);
-                break;
-            case "Frontdesk":
-                FrontdeskForm frontdeskForm = new FrontdeskForm("Frontdesk", user);
-                break;
-            case "Manager":
-                ManagerForm managerForm = new ManagerForm("Manager", user);
-                break;
-        }
     }
 }

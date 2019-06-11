@@ -30,6 +30,10 @@ public class User {
         }
     }
 
+    public Object[][] loadData(){
+        return null;
+    }
+
     public String getUsername() {
         return username;
     }
