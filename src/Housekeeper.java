@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Housekeeper extends User {
 
     public Housekeeper(String username) {
-        super();
         setRole("Housekeeper");
         setUsername(username);
     }
@@ -30,7 +29,6 @@ public class Housekeeper extends User {
 
             pst.setString(3, room.getNoteForSupervisor());
             pst.setInt(4, room.getNumber());
-
             int rowsUpdated = pst.executeUpdate();
 
             if (rowsUpdated > 0) {
@@ -41,6 +39,7 @@ public class Housekeeper extends User {
             ex.printStackTrace();
         }
     }
+
     public Object[][] loadData(){
         ArrayList<Room> roomsList = new ArrayList<>();
         int lastElement;
@@ -77,8 +76,6 @@ public class Housekeeper extends User {
             data[i][5] = roomsList.get(i).getNoteForSupervisor();
             data[i][6] = roomsList.get(i).isCleaned();
         }
-
         return data;
     }
-
 }

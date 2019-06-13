@@ -55,6 +55,10 @@ public class LoginForm {
                                 user = new Manager(result.getString("user_username"));
                                 ManagerForm managerForm = new ManagerForm("Manager", user);
                                 break;
+                            case "Guest":
+                                user = new User(result.getString("user_username"));
+                                GuestForm guestForm = new GuestForm("Guest", user);
+                                break;
                         }
 
                         frame.dispose();

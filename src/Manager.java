@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Manager extends User {
 
     public Manager(String username) {
-        super();
         setRole("Manager");
         setUsername(username);
     }
@@ -55,7 +54,6 @@ public class Manager extends User {
             }
 
             pst.setInt(11, room.getNumber());
-
             int rowsUpdated = pst.executeUpdate();
 
             if (rowsUpdated > 0) {
@@ -110,9 +108,6 @@ public class Manager extends User {
             data[i][9] = roomsList.get(i).getAdditionalInfo();
             data[i][10] = roomsList.get(i).getNoteForSupervisor();
         }
-
         return data;
     }
-
-
 }

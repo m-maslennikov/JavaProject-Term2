@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Supervisor extends User{
 
     public Supervisor(String username) {
-        super();
         setRole("Supervisor");
         setUsername(username);
     }
@@ -24,7 +23,6 @@ public class Supervisor extends User{
             pst.setBoolean(2, room.isChecked());
             pst.setString(3, room.getAdditionalInfo());
             pst.setInt(4, room.getNumber());
-
             int rowsUpdated = pst.executeUpdate();
 
             if (rowsUpdated > 0) {
@@ -74,9 +72,6 @@ public class Supervisor extends User{
             data[i][6] = roomsList.get(i).isCleaned();
             data[i][7] = roomsList.get(i).isChecked();
         }
-
         return data;
     }
-
-
 }

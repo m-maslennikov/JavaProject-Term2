@@ -4,7 +4,6 @@ import java.util.ArrayList;
 public class Frontdesk extends User {
 
     public Frontdesk(String username) {
-        super();
         setRole("Frontdesk");
         setUsername(username);
     }
@@ -18,7 +17,6 @@ public class Frontdesk extends User {
                     "WHERE room_number=?";
 
             PreparedStatement pst = conn.prepareStatement(sql);
-
             pst.setBoolean(1, room.isOccupied());
 
             if (room.getCheckoutDate().equals("N/A") || room.getCheckoutDate().equals("")){
@@ -28,7 +26,6 @@ public class Frontdesk extends User {
             }
 
             pst.setInt(3, room.getNumber());
-
             int rowsUpdated = pst.executeUpdate();
 
             if (rowsUpdated > 0) {
@@ -77,9 +74,6 @@ public class Frontdesk extends User {
             data[i][6] = roomsList.get(i).getSupervisor();
             data[i][7] = roomsList.get(i).getHousekeeper();
         }
-
         return data;
     }
-
-
 }

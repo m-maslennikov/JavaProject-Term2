@@ -24,6 +24,7 @@ public class FrontdeskForm {
         this.user = user;
         usernameLabel.setText("Current user: " + user.getUsername());
 
+        //Load and check data for the table
         roomsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         updateTable(user.loadData());
         helper.checkTable(roomsTable);
@@ -89,6 +90,4 @@ public class FrontdeskForm {
         };
         roomsTable.setModel(frontdeskTableModel);
     }
-
-
 }

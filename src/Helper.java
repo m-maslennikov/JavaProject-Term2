@@ -26,7 +26,6 @@ public class Helper {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
         return usersList.toArray(new String[0]);
     }
 
