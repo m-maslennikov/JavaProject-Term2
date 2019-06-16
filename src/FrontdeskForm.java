@@ -1,5 +1,7 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -89,5 +91,17 @@ public class FrontdeskForm {
             }
         };
         roomsTable.setModel(frontdeskTableModel);
+        setUpComboBoxColumn(roomsTable.getColumnModel().getColumn(3), helper.getCleaningOptions());
+    }
+
+    private void setUpComboBoxColumn(TableColumn col, String[] options) {
+        //Set up the editor for the cells.
+        JComboBox comboBox = new JComboBox(options);
+        col.setCellEditor(new DefaultCellEditor(comboBox));
+
+        //Set up tool tips for the cells.
+        DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setToolTipText("Click to select");
+        col.setCellRenderer(renderer);
     }
 }
